@@ -1,71 +1,107 @@
 import React from 'react';
-import { connect } from "react-redux";
 import {
   Text,
   View,
   StyleSheet,
 } from 'react-native';
-import { findDifference } from "../../utils/helpers";
-import Rates from "../Rates/Rates";
+import {
+  findDifference,
+  getCurrencyRateOnDate,
+} from "../../utils/helpers";
 import DifferenceTable from "./ComparisonTable/Table";
+import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
+import {RateRepresentation} from "../Rates/Rate/RateRepresentation";
+import CustomDatepicker from "../../components/CustomDatepicker/CustomDatepicker";
 
 class ComparisonContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHead: ['%'],
+      tableHead: [],
       tableTitle: [],
       tableData: [],
       isGenerated: false,
+      currentDate: new Date(),
+      exchangeRates: null,
     }
   }
 
-  getPercentageDifference = () => {
-    const { exchangeRates } = this.props;
-    const { tableHead, tableTitle, tableData } = this.state;
-    let rates = [];
-    for (const [currency, rate] of Object.entries(exchangeRates)) {
-      rates.push({
-        currency,
-        rate,
-      });
-      tableTitle.push(currency);
-    }
+  getPercentageDifference = (date) => {
+    getCurrencyRateOnDate(date).then( exchangeRates => {
+      let tableHead = ['%'];
+      let tableTitle = [];
+      let tableData = [];
 
-    tableHead.push(...tableTitle);
-    const ratesCount = rates.length;
-    for (let i = 0; i < ratesCount; i++) {
-      let array = [];
-      for (let j = 0; j < ratesCount; j++) {
-        const a = rates[i];
-        const b = rates[j];
-        array.push(findDifference(b.rate, a.rate).toFixed(4));
+      let rates = [];
+      for (const [currency, rate] of Object.entries(exchangeRates)) {
+        rates.push({
+          currency,
+          rate,
+        });
+        tableTitle.push(currency);
       }
-      tableData.push(array);
-    }
 
-    this.setState({
-      tableHead: tableHead,
-      tableTitle: tableTitle,
-      tableData: tableData,
-      isGenerated: true,
-    });
+      tableHead.push(...tableTitle);
+      const ratesCount = rates.length;
+      for (let i = 0; i < ratesCount; i++) {
+        let array = [];
+        for (let j = 0; j < ratesCount; j++) {
+          const a = rates[i];
+          const b = rates[j];
+          array.push(findDifference(b.rate, a.rate).toFixed(4));
+        }
+        tableData.push(array);
+      }
+
+      this.setState({
+        tableHead: tableHead,
+        tableTitle: tableTitle,
+        tableData: tableData,
+        isGenerated: true,
+        exchangeRates: exchangeRates,
+      });
+    }).catch(error => this.setState({isGenerated: false}));
   };
 
   componentDidMount() {
-    this.getPercentageDifference();
+    this.getPercentageDifference(new Date());
   }
 
   render() {
-    const { tableHead, tableData, tableTitle, isGenerated } = this.state;
-    const { isFetching } = this.props;
+    const { tableHead, tableData, tableTitle, isGenerated, exchangeRates } = this.state;
+    let rates = [];
+    const renderRates = () => {
+      let keyCounter = 0;
+      for (const [currencyName, currencyValue] of Object.entries(exchangeRates)) {
+        keyCounter += 1;
+        if (exchangeRates.hasOwnProperty(currencyName)) {
+          rates.push(
+            <RateRepresentation
+              key={keyCounter}
+              rateName={currencyName}
+              rate={currencyValue}
+            />);
+        }
+      }
+      return rates;
+    };
+
     return (
       <View style={styles.container}>
-        <Rates />
         {
-          isGenerated && !isFetching ?
+          isGenerated ?
             <React.Fragment>
-              <Text style={{marginBottom: 10}}>For date: {new Date().toDateString()}</Text>
+              <View style={{marginBottom: 10, marginTop: 10,}}>
+                <CustomDatepicker
+                  onDateChange={nextDate => {this.setState({currentDate: nextDate})}}
+                  date={this.state.currentDate}
+                />
+                <PrimaryButton
+                  onPress={() => { this.getPercentageDifference(this.state.currentDate)}}
+                  label="Calculate"
+                />
+              </View>
+              {renderRates()}
               <DifferenceTable
                 tableData={tableData}
                 tableHead={tableHead}
@@ -90,11 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = store => {
-  return {
-    exchangeRates: store.appReducer.exchangeRates,
-    isFetching: store.appReducer.isFetching,
-  };
-};
-
-export default connect(mapStateToProps)(ComparisonContainer);
+export default ComparisonContainer;

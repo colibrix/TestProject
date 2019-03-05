@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   View,
   StyleSheet,
+  Text,
 } from 'react-native';
 import {
   Card,
@@ -34,6 +35,7 @@ const Rates = props => {
 
   return (
     <View style={styles.container}>
+      <Text>For date {new Date().toLocaleDateString()}</Text>
       <Card style={styles.card}>
         <CardItem>
           <View>
@@ -52,7 +54,7 @@ const Rates = props => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   card: {
     paddingTop: 10,

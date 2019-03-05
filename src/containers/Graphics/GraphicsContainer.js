@@ -51,7 +51,8 @@ class GraphicsContainer extends React.Component {
     }
     if (currencyId) {
       try {
-        const response = await fetch(getDynamicsUri(currencyId, convertToPresetFormat(startDate), convertToPresetFormat(endDate)));
+        const response =
+          await fetch(getDynamicsUri(currencyId, convertToPresetFormat(startDate), convertToPresetFormat(endDate)));
         const json = await response.json();
         let points = [];
         json.forEach((item) => {
@@ -98,6 +99,9 @@ class GraphicsContainer extends React.Component {
       <ScrollView style={styles.container}>
         <View style={{marginLeft: 20, marginRight: 20,}}>
           <Rates />
+          <View>
+            { chart }
+          </View>
           <Text>Select currency...</Text>
           <CurrencySelector
             selectedValue={currencyId}
@@ -115,9 +119,6 @@ class GraphicsContainer extends React.Component {
             />
           </View>
           <Text style={styles.errorText}>{ error }</Text>
-        </View>
-        <View>
-          { chart }
         </View>
       </ScrollView>
     );
