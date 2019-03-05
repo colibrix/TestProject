@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
+  Text,
 } from "react-native";
 import {
   CURRENCY_NAMES,
@@ -74,6 +75,9 @@ class ConverterContainer extends React.Component {
         {
           !isFetching ?
             <View style={styles.wrapper}>
+              <Text style={{marginBottom: 10, fontSize: 12, fontStyle: 'italic'}}>
+                You can print only numbers and delimiter 'dot' for float numbers.
+              </Text>
               <NumericInput
                 currencyName={CURRENCY_NAMES.USD}
                 onChangeText={this.handleOnAnyCurrencyChange}

@@ -4,18 +4,24 @@ import {
   TextInput,
   View,
   StyleSheet,
+  Platform,
 } from "react-native";
 import PropTypes from 'prop-types';
 
 const NumericInput = props => {
   const { currencyName, onChangeText, value } = props;
+  const keyboardType = Platform.select({
+    ios: 'numbers-and-punctuation',
+    android: 'numeric',
+  });
   return (
     <View style={styles.container}>
       <Text style={styles.label}>
         { currencyName }
       </Text>
       <TextInput
-        keyboardType='numeric'
+        returnKeyType='done'
+        keyboardType={keyboardType}
         value={value}
         onChangeText={ (value) => { onChangeText(value, currencyName) }}
         style={styles.inputContainerStyle}
