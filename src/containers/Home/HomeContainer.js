@@ -6,7 +6,6 @@ import {
   Text,
 } from "react-native";
 import Rates from "../Rates/Rates";
-import { colors } from "../../utils/colors";
 
 class HomeContainer extends React.Component {
   render() {
