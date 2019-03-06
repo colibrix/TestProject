@@ -99,6 +99,7 @@ class GraphicsContainer extends React.Component {
       <ScrollView style={styles.container}>
         <View style={{marginLeft: 20, marginRight: 20,}}>
           <Rates />
+          <Text>Scale: {currencyId === RUB_ID ? 100 : 1}</Text>
           <View>
             { chart }
           </View>
