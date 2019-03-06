@@ -99,6 +99,7 @@ class ComparisonContainer extends React.Component {
                 <PrimaryButton
                   onPress={() => { this.getPercentageDifference(this.state.currentDate)}}
                   label="Calculate"
+                  style={{width: '45%'}}
                 />
               </View>
               {renderRates()}

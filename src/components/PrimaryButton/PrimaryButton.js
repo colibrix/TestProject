@@ -8,9 +8,9 @@ import PropTypes from 'prop-types';
 import { colors } from "../../utils/colors";
 
 const PrimaryButton = props => {
-  const { onPress, label } = props;
+  const { onPress, label, style } = props;
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity style={{...styles.button, ...style}} onPress={onPress}>
       <Text style={styles.label}>{label}</Text>
     </TouchableOpacity>
   );
